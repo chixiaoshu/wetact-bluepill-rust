@@ -5,18 +5,23 @@ authors = ["chixiaoshu <chixiaoshu@petalmail.com>"]
 edition = "2021"
 
 [dependencies]
-cortex-m = "0.7"
-cortex-m-rt = "0.7"
-panic-halt = "0.2.0"
-
+cortex-m = "0.7.7"
+# panic-halt = "0.2.0"
+embedded-hal = "1.0.0"
+panic-probe = "0.3.2"
 
 [dependencies.stm32f1xx-hal]
-git = "https://github.com/stm32-rs/stm32f1xx-hal"
-features = ["stm32f103", ]
+# git = "https://github.com/stm32-rs/stm32f1xx-hal"
+features = ["stm32f103", "rt", "medium"]
+version = "0.10.0"
+
+[dependencies.cortex-m-rt]
+version = "0.7.3"
+features = ["device"]
 
 # Set the default for dependencies.
 [profile.dev.package."*"]
-opt-level = "s"
+opt-level = "z"
 
 [profile.release]
 codegen-units = 1
