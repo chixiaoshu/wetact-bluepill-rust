@@ -1,52 +1,41 @@
 {
-    /* 
-     * Requires the Rust Language Server (rust-analyzer) and Cortex-Debug extensions
-     * https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer
-     * https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug
-     */
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "cortex-debug",
+            "preLaunchTask": "${defaultBuildTask}",
+            "type": "probe-rs-debug",
             "request": "launch",
-            "name": "Debug (QEMU)",
-            "servertype": "qemu",
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": "Cargo Build (debug)",
-            "runToEntryPoint": "main",
-            "executable": "./target/thumbv7m-none-eabi/debug/wetact-bluepill-rust",
-            /* Run `cargo build --example hello` and uncomment this line to run semi-hosting example */
-            //"executable": "./target/thumbv7m-none-eabi/debug/examples/hello",
-            "cpu": "cortex-m3",
-            "machine": "lm3s6965evb",
-        },
-        {
-            /* Configuration for the STM32F303 Discovery board */
-            "type": "cortex-debug",
-            "request": "launch",
-            "name": "Debug (OpenOCD)",
-            "servertype": "openocd",
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": "Cargo Build (debug)",
-            "runToEntryPoint": "main",
-            "executable": "./target/thumbv7em-none-eabihf/debug/wetact-bluepill-rust",
-            /* Run `cargo build --example itm` and uncomment this line to run itm example */
-            // "executable": "./target/thumbv7em-none-eabihf/debug/examples/itm",
-            "device": "STM32F303VCT6",
-            "configFiles": [
-                "interface/stlink-v2-1.cfg",
-                "target/stm32f3x.cfg"
+            "name": "probe-rs-debugger",
+            // "server": "127.0.0.1:50001", // For connecting to an existing probe-rs-debugger process
+            "chip": "STM32F103CBTx",
+            "cwd": "${workspaceFolder}",
+            "coreConfigs": [
+                {
+                    "coreIndex": 0,
+                    "svdFile": "stm32f103.svd.patched",
+                    "rttEnabled": true,
+                    "rttChannelFormats": [
+                        {
+                            "dataFormat": "String",
+                            "channelNumber": 0,
+                            "showTimestamps": true
+                        }
+                    ],
+                },
             ],
-            "svdFile": "${workspaceRoot}/.vscode/STM32F303.svd",
-            "swoConfig": {
-                "enabled": true,
-                "cpuFrequency": 8000000,
-                "swoFrequency": 2000000,
-                "source": "probe",
-                "decoders": [
-                    { "type": "console", "label": "ITM", "port": 0 }
-                ]
-            }
-        }
+            "runtimeExecutable": "probe-rs",
+            "runtimeArgs": ["dap-server"],
+            "flashingConfig": {
+              "flashingEnabled": true,
+              "haltAfterReset": false,
+              "formatOptions": {
+                "format": "elf" //!MODIFY (or remove). Valid values are: 'bin', 'hex', 'elf'(default), 'idf'
+              }
+            },
+            "connectUnderReset": false,
+            "consoleLogLevel": "Console" //Info, Debug
+            //"speed": 24000, //!MODIFY (or remove)
+            //"probe": "VID:PID:<Serial>", //!MODIFY (or remove)
+        },
     ]
 }
